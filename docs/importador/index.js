@@ -1,11 +1,13 @@
 var fs = require('fs');
 var Edicao = require('./models/edicao.js');
 var Carta = require('./models/carta.js');
+var Controle = require('./models/controle.js');
 var config = require('./config');
 var mongoose = require('mongoose');
 var async = require('async');
+var Q = require('q');
 var edicoes = [];
-
+var goNext = true;
 
 mongoose.connect(config.database);
 
@@ -19,25 +21,35 @@ function importarEdicoes() {
 
         var queueEdicoes = async.queue(function(_edicao, next){
                 try {
-                    if (_edicao.mkm_id > 0) {
-                        Edicao.findOne({ mkm_id: _edicao.mkm_id }, function(err, doc) {
+                    if (_edicao.releaseDate) {
+                        Edicao.findOne({ code: _edicao.code }, function(err, doc) {
                             if (!doc) {
                                 var edicao = new Edicao(_edicao);
+                                edicao.language = 'en';
                                 edicao.save(function(err, doc) {
                                     console.log("importando...", doc.name);
-                                    importarCartas(_edicao);
-                                    next();
+                                    importarCartas(_edicao).then(function () {
+                                        if (goNext) {
+                                            next();
+                                        }
+                                    });
                                 });
                             } else {
                                 console.log(_edicao.name, 'já foi importada');
-                                importarCartas(_edicao);
-                                next();
+                                importarCartas(_edicao).then(function () {
+                                    if (goNext) {
+                                        next();
+                                    }
+                                });
                             }
                         });
                     } else {
                         try {
-                            importarCartas(_edicao);
-                            next();
+                            importarCartas(_edicao).then(function () {
+                                if (goNext) {
+                                    next();
+                                }
+                            });
                         } catch (e) {
                             console.error(e); // pass exception object to error handler
                         }
@@ -45,7 +57,7 @@ function importarEdicoes() {
                 } catch (e) {
                     console.error(e); // pass exception object to error handler
                 }
-        });
+        }, 1);
 
 
         var arquivos = fs.readdirSync('mtgjson/json');
@@ -62,33 +74,67 @@ function importarEdicoes() {
 }
 
 function importarCartas(arquivo) {
-    edicoes[arquivo.code] = 'importando...';
-    console.log(arquivo.cards.length, "CARTAS");
+    var deferred = Q.defer();
     var cartas = arquivo.cards;
+    var cartasImportar = [];
+
+    arquivo.language = arquivo.language ? arquivo.language : 'en';
+
+
+
 
     var queueCartas = async.queue(function(_carta, next) {
 
-        Carta.findOne({$or: [{multiverseid: _carta.multiverseid}, {id: _carta.id}]}, function(err, doc) {
+        Carta.findOne({$or: [{multiverseid: _carta.multiverseid}, {id: _carta.id}]}, { _id: 1 }, function(err, doc) {
             if (!doc) {
-                var carta = new Carta(_carta);
-                carta.save(function(err, doc) {
-                    console.log("importando carta", _carta.id, _carta.name, _carta.multiverseid);
-                    next();
-                });
+                var carta = _carta;
+                carta.code = arquivo.code;
+                carta.language = arquivo.language;
+                cartasImportar.push(carta);
+                //carta.save(function(err, doc) {
+                    //console.log("importando carta", _carta.id, _carta.name, _carta.multiverseid);
+                    if (goNext) {
+                        next();
+                    }
+                //});
             } else {
-                console.log("|||||||||| Carta", _carta.id, " => ", _carta.multiverseid,"já foi importada ||||||||||");
-                next();
+                //console.log("Carta", _carta.id, " => ", _carta.multiverseid,"já foi importada.");
+                if (goNext) {
+                    next();
+                }
             }
         });
 
     }, 1);
 
-    cartas.forEach(function (carta) {
-        queueCartas.push(carta);
-    });
+    if (cartas.length === 0) {
+        deferred.resolve();
+    } else {
+        Controle.findOne({ code: arquivo.code, language: arquivo.language }, function (err, jafoi) {
+            if (!jafoi) {
+                console.log('QUANTIDADE:', cartas.length);
+                cartas.forEach(function (carta) {
+                    queueCartas.push(carta);
+                });
+            } else {
+                deferred.resolve();
+            }
+        });
+    }
 
     queueCartas.drain = function () {
-        delete edicoes[arquivo.code];
-        console.log("Fila finalizada=>>>>>>>>>", arquivo.name);
+        Carta.create(cartasImportar, function (err, res){
+            Controle.create([{
+                code: arquivo.code,
+                language: arquivo.language
+            }], function () {
+                deferred.resolve();
+                console.log("Fila finalizada=>>>>>>>>>", arquivo.name);
+            });
+        });
     };
+
+
+
+    return deferred.promise;
 }
