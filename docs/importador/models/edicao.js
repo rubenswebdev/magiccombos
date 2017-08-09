@@ -7,6 +7,7 @@ var Schema = mongoose.Schema({
   "releaseDate": String,
   "border": String,
   "type": String,
+  "language": String,
   "block": String,
   "booster": [],
   "translations": {

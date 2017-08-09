@@ -63,9 +63,12 @@ function importarEdicoes() {
         var arquivos = fs.readdirSync('mtgjson/json');
 
         arquivos.forEach(function(fileName){
+            console.log('Arquivo', fileName);
             var arquivo = fs.readFileSync('mtgjson/json/' + fileName);
-            arquivo = JSON.parse(arquivo);
-            queueEdicoes.push(arquivo);
+            if (fileName !== '.editorconfig') {
+                arquivo = JSON.parse(arquivo);
+                queueEdicoes.push(arquivo);
+            }
         });
 
         queueEdicoes.drain = function() {
