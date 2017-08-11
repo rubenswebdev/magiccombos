@@ -1,0 +1,7 @@
+module.exports = {
+    secret: 'm4g1c13',
+    database: 'mongodb://127.0.0.1:27017/doctor',
+    uploadPath: '/var/www/projetos/doctors/doctor-admin/frontend/uploads/',
+    initialPort: 2020,
+    passFixture: 'm4g1c13',
+};

@@ -1,0 +1,27 @@
+<div ui-view>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <button  ui-sref="decks.add" class="pull-right btn btn-success"><i class="glyphicon glyphicon-plus"></i> Criar</button>
+    </div>
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default " ng-repeat="item in vm.lista">
+            <div class="panel-body">
+                <div class="col-xs-9 col-sm-9 col-md-9 col-lg-9 deck"  ui-sref="decks.cartas({id: item._id})">
+                    <h3 >
+                        <i class="glyphicon glyphicon-bookmark"></i> {{item.nome}}
+                    </h3>
+                </div>
+                <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+                    <div class="btn-group pull-right">
+                      <button type="button" class="btn btn-xs btn-primary dropdown-toggle" data-toggle="dropdown">...</button>
+                      <ul class="dropdown-menu">
+                        <li><a ui-sref="decks.cartas({id: item._id})">Cartas</a></li>
+                        <li><a ui-sref="decks.edit({id: item._id})">Renomear</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="text-danger"><a href="javascript:;" ><i class="glyphicon glyphicon-remove"></i> Remover</a></li>
+                      </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,93 @@
+<div ui-view class="row">
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <label>Buscar carta:</label>
+
+        <input type="text"
+            ng-model="vm.cartaSelected"
+            uib-typeahead="carta as (carta.name + ' - ' + carta.code) for carta in vm.findCartas($viewValue) | limitTo:8"
+            typeahead-on-select="vm.select($item)"
+            typeahead-loading="loadingEspec" typeahead-no-results="noResultsEspec"
+            class="form-control busca" autocomplete="off"
+            placeholder="Elspeth"
+        >
+
+        <i ng-show="loadingEspec" class="glyphicon glyphicon-refresh"></i>
+        <div ng-show="noResultsEspec">
+          <i class="glyphicon glyphicon-remove"></i> Nenhuma carta encontrado
+        </div>
+    </div>
+
+    <div ng-show="vm.item" class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
+        <div class="thumbnail">
+          <img class="imgDeck" ng-class="{'stack__item--accept': vm.added}" src="/assets/img/card.jpg" alt="...">
+          <div class="caption">
+            <div class="alert alert-warning" ng-show="!vm.item._id">
+                <strong>Nenhuma carta selecionada</strong>
+            </div>
+            <h3>{{vm.item.name}}</h3>
+
+            <label>Quantidade:</label>
+            <div class="input-group">
+              <span class="input-group-btn">
+                <button ng-disabled="!vm.item._id" class="btn btn-danger" ng-click="vm.quantidade = vm.quantidade - 1" type="button"><i class="glyphicon glyphicon-minus"></i></button>
+              </span>
+              <input ng-disabled="!vm.item._id" type="text" class="form-control" ng-model="vm.quantidade" placeholder="4">
+              <span class="input-group-btn">
+                <button ng-disabled="!vm.item._id" class="btn btn-primary" ng-click="vm.quantidade = vm.quantidade + 1" type="button"><i class="glyphicon glyphicon-plus"></i></button>
+              </span>
+            </div>
+            <p class="text-center">
+                <button ng-disabled="!vm.item._id" class="btn btn-md btn-success btn-block" ng-click="vm.addCarta()">Adicionar</button>
+            </p>
+          </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9">
+
+        <div class="row">
+
+        <div class="col-xs-12 col-sm-12 col-md-10 col-lg-10">
+            <b class="deckTitle"> <input type="text" class="form-control" ng-model="vm.form.nome"></b>
+        </div>
+        <div class="col-xs-12 col-sm-12 col-md-2 col-lg-2">
+            <button type="button" class="btn btn-success pull-right btn-block" ng-click="vm.save()">salvar alterações</button>
+        </div>
+        </div>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>
+                        <i class="glyphicon glyphicon-cog"></i>
+                    </th>
+                    <th></th>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Mana</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="carta in vm.form.cartas">
+                    <td>
+                        <button class="btn-sm btn btn-danger" ng-click="vm.remove($index)"><i class="glyphicon glyphicon-remove"></i></button>
+                    </td>
+                    <td>
+                        <button class="btn-sm btn btn-primary" ng-click="carta.quantidade = carta.quantidade + 1"><i class="glyphicon glyphicon-plus"></i></button>
+                        <b class="qtd">{{vm.pad(carta.quantidade)}}</b>
+                        <button class="btn-sm btn btn-primary" ng-click="vm.diminui(carta)"><i class="glyphicon glyphicon-minus"></i></button>
+                    </td>
+                    <td>{{carta.name}}</td>
+                    <td>{{carta.type}}</td>
+                    <td>{{carta.manaCost}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+<!-- <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+<pre>
+{{vm.form | json}}
+{{vm.item | json}}
+</pre>
+</div> -->
+</div>

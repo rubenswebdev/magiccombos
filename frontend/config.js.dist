@@ -1,0 +1,15 @@
+(function () {
+    'use strict';
+
+    angular.module('app')
+        .constant('myConfig', {
+            api: window.location.origin + '/api',
+            doctorUploads: 'http://admin.doctor.dev/uploads/',
+            socket: 'http://localhost:5050',
+        });
+
+    angular.module('core')
+        .constant('coreConfig', {
+            cache: true,
+        });
+})();

@@ -1,0 +1,19 @@
+<div class="col-md-4 col-md-offset-4">
+    <form class="form"  ng-submit="vm.save()" ><!-- Inicio Form -->
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-pencil"></i></span>
+            <input required="" ng-model="vm.form.nome"  type="text" class="form-control" placeholder="Nome">
+        </div>
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+            <input required="" ng-model="vm.form.email"  type="text" class="form-control" placeholder="E-mail">
+        </div>
+
+        <div class="input-group">
+            <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+            <input required="" ng-model="vm.form.password"  type="password" class="form-control" placeholder="Senha">
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg">{{vm.form._id ? 'Salvar alterações' : 'Confirmar'}}</button>
+    </form><!-- End Form -->
+</div>
