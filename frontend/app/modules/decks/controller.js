@@ -70,7 +70,7 @@ function DecksController(ApiService, JwtService, toaster, $state, $stateParams, 
     }
 
     function findCartas(keyword) {
-        return ApiService.get('/v1/cartas/0/10/' + keyword).then(function (res) {
+        return ApiService.get('/v1/cartas/0/9999/' + keyword).then(function (res) {
             vm.cartas = res.data;
             return vm.cartas;
         });
@@ -97,8 +97,6 @@ function DecksController(ApiService, JwtService, toaster, $state, $stateParams, 
 
         $timeout(function () {
             vm.added = false;
-
-            console.log('added false');
         }, 300);
     }
 

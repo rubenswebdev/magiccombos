@@ -23,9 +23,8 @@ function LoginController(ApiService, $state, JwtService, toaster) {
         ApiService.login(vm.form).then(function (data) {
             vm.status = data;
             if (data.success) {
-                toaster.pop('success', 'Login', data.message);
                 JwtService.setToken(data.token);
-                $state.go('dashboard');
+                $state.go('decks');
             } else {
                 toaster.pop('error', 'Erro', data.message);
             }
