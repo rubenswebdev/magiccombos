@@ -8,6 +8,8 @@ exports.index = function (req, res) {
 
     var filtro = {};
 
+    filtro.language = 'en';
+
     if (texto) {
         texto = decodeURI(texto);
         filtro.$or = [];
@@ -15,10 +17,14 @@ exports.index = function (req, res) {
         filtro.$or.push({ 'foreignNames.name': { $regex: texto, $options: 'ig' } });
     }
 
-    Model.find(filtro)
+    if (req.params.limit > 25) {
+        req.params.limit = 25;
+    }
+
+    Model.find(filtro, { name: 1, code: 1, number: 1, language: 1, multiverseid: 1, foreignNames: { $elemMatch: { language: 'Portuguese (Brazil)' } } })
      .skip(parseInt(req.params.skip) || 0).limit(parseInt(req.params.limit) || 25)
      .exec(function (err, data) { //o que fazer com o resultado
-
+        console.log(err);
         Model.find(filtro).count()
         .exec(function (err, total) {
             var response = {};

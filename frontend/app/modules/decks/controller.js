@@ -24,6 +24,7 @@ function DecksController(ApiService, JwtService, toaster, $state, $stateParams, 
     vm.pad = pad;
     vm.diminui = diminui;
     vm.remove = remove;
+    vm.makePath = makePath;
 
     start();
 
@@ -115,6 +116,15 @@ function DecksController(ApiService, JwtService, toaster, $state, $stateParams, 
     function remove(index) {
         if (confirm('Deseja remover a carta: ' + vm.form.cartas[index].name + '?'))
         vm.form.cartas.splice(index, 1);
+    }
+
+    function makePath() {
+        if (vm.item.language) {
+            //var path = 'http://magiccards.info/scans/' + vm.item.language + '/' + vm.item.code.toLowerCase() + '/' + vm.item.number + '.jpg';
+            var path = 'http://gatherer.wizards.com/Handlers/Image.ashx?multiverseid=' + vm.item.multiverseid + '&type=card';
+            console.log(path);
+            return path;
+        }
     }
 }
 })();

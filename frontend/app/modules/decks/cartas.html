@@ -5,11 +5,13 @@
 
         <input type="text"
             ng-model="vm.cartaSelected"
-            uib-typeahead="carta as (carta.name + ' - ' + carta.code) for carta in vm.findCartas($viewValue) | limitTo:8"
+            uib-typeahead="carta as (carta.name + (carta.foreignNames[0] ? ' / ' + carta.foreignNames[0].name : '') + ' - ' + carta.code) for carta in vm.findCartas($viewValue) | limitTo:8"
             typeahead-on-select="vm.select($item)"
             typeahead-loading="loadingEspec" typeahead-no-results="noResultsEspec"
+            typeahead-min-length="3"
             class="form-control busca" autocomplete="off"
             placeholder="Elspeth"
+            ng-model-options="{ debounce: 300 }"
         >
 
         <i ng-show="loadingEspec" class="glyphicon glyphicon-refresh"></i>
@@ -20,7 +22,7 @@
 
     <div ng-show="vm.item" class="col-xs-12 col-sm-12 col-md-3 col-lg-3">
         <div class="thumbnail">
-          <img class="imgDeck" ng-class="{'stack__item--accept': vm.added}" src="/assets/img/card.jpg" alt="...">
+          <img class="imgDeck" ng-class="{'stack__item--accept': vm.added}" src="/assets/img/card.jpg" alt="..." ng-src="{{vm.makePath()}}">
           <div class="caption">
             <div class="alert alert-warning" ng-show="!vm.item._id">
                 <strong>Nenhuma carta selecionada</strong>
@@ -90,10 +92,10 @@
             </tbody>
         </table>
     </div>
-<!-- <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 <pre>
 {{vm.form | json}}
 {{vm.item | json}}
 </pre>
-</div> -->
+</div>
 </div>
